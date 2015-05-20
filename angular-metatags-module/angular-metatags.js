@@ -1,6 +1,8 @@
 /**
- * Author Avraam Mavridis (avr.mav@gmail.com)
+ * Original Author: Avraam Mavridis (avr.mav@gmail.com)
  * https://github.com/AvraamMavridis
+ * Modified by: Huy Hong (huyhong@gmail.com)
+ * https://github.com/huyhong
  */
 angular.module('metatags', [])
   .provider('MetaTags',function(){
@@ -27,14 +29,13 @@ angular.module('metatags', [])
       for(var i = 0; i < routesLength; i++){
 
         var routeName = routesArray[i];
-        var routeMetaTagsObject = routes[routeName];
+        var routeMetaTagsObject = routes[path];
         var routeMetaTagsArray = Object.keys(routeMetaTagsObject);
         var routeArgs = routeName.split('/').filter(Boolean);
         var routeArgsLength = routeArgs.length;
         var pathArgs = path.split('/').filter(Boolean);
         var pathArgsLength = pathArgs.length;
         var flag1 = true;
-        var flag2 = false;
 
         if(routeArgsLength !== pathArgsLength){
           continue;
@@ -54,8 +55,6 @@ angular.module('metatags', [])
 
         var routeMetaTagsLength = routeMetaTagsArray.length;
         var placeHolderLength = Object.keys(placeholder).length;
-
-
 
         if(placeHolderLength > 0){
           for(var ii = 0; ii < routeMetaTagsLength; ii++){
@@ -83,27 +82,19 @@ angular.module('metatags', [])
                 info[o] = otherwise[o];
             }
 
-            if (routeArgs[0] === pathArgs[0]) {
-                flag2 = true;
-                break;
-            }
         }
       }
-        if (flag1 && flag2) {
             for (var o in routeMetaTagsObject) {
                 info[o] = routeMetaTagsObject[o];
             }
             return info;
-        } else {
-            return info;
-        }
+
     };
 
 
-    this.$get = ["$rootScope", "$location", function ($rootScope, $location){
+    this.$get = ["$rootScope", function ($rootScope){
 
-        var update = function(){
-          path = $location.path();
+        var update = function(path){
           info = getMetaTags(path);
           for(var tt in info){
             $rootScope.metatags[tt] = info[tt];
@@ -113,9 +104,10 @@ angular.module('metatags', [])
         return {
           initialize: function(){
             $rootScope.metatags = {};
-            $rootScope.$on('$routeChangeSuccess', update);
-          }
+          },
+          update: update
         }
+
     }];
   });
 
