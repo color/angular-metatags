@@ -97,6 +97,9 @@ angular.module('metatags', [])
         var update = function(path){
           info = getMetaTags(path);
           for(var tt in info){
+            if(tt == 'title') {
+              document.title = info[tt];
+            }
             $rootScope.metatags[tt] = info[tt];
           }
         };
